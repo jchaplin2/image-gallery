@@ -1,5 +1,8 @@
 (function() {
-    let _mainContainer;
+    let _mainContainerDiv,
+        _gridContainer,
+        _gridContainerDiv;
+
     const ENTER_KEY = 13,
           API_KEY = 'GZKGwdu6xlIM0iV58yFKJOFLqj0NLXFw',
           ROOT_URL = `http://api.giphy.com/v1/gifs/search?api_key=${API_KEY}`;
@@ -9,7 +12,7 @@
 
         let renderSearchBox = function() {
             let inputDiv = window.document.createElement("div");
-            inputDiv.className = "input-group-append";
+            inputDiv.className = "input-group-append pointer-cursor";
 
             let inputButton = window.document.createElement("span");
             inputButton.className = "input-group-text";
@@ -45,7 +48,26 @@
 
             inputDiv.appendChild(renderInput());
             inputDiv.appendChild(renderSearchBox());
-            _mainContainer.appendChild(inputDiv);
+            _mainContainerDiv.appendChild(inputDiv);
+        };
+    }
+
+    function ImageGridComponent(){
+        this.renderContainer = function(json) {
+            renderResults(json);
+        };
+
+        let renderResults = function(json) {
+            let jsonDataArr = json.data;
+            for(let i=0; i<jsonDataArr.length; i++) {
+                let imgObject = jsonDataArr[i],
+                    {images} = imgObject;
+
+                let img = window.document.createElement("img");
+                img.setAttribute("src", images.fixed_width.url);
+                img.className = "mt-2";
+                _gridContainerDiv.appendChild(img);
+            }
         };
     }
 
@@ -54,15 +76,22 @@
         fetch(url).then(function(response) {
           return response.json();
         }).then(function(myJson) {
-          console.log(JSON.stringify(myJson));
+            _gridContainer.renderContainer(myJson);
         });
     };
 
     let init = function() {
-        _mainContainer = window.document.getElementById("main");
+        _mainContainerDiv = window.document.getElementById("main");
 
         let inputSearchBox = new InputSearchComponent();
         inputSearchBox.renderContainer();
+
+        _gridContainer = new ImageGridComponent();
+
+        _gridContainerDiv = window.document.createElement("div");
+        _gridContainerDiv.setAttribute("id", "row-results");
+        _gridContainerDiv.className = "row-wrapped-results mt-3";
+        _mainContainerDiv.appendChild(_gridContainerDiv);
     }
 
     init();

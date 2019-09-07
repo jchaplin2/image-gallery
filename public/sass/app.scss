@@ -1,4 +1,14 @@
-body {
-    color:red;
-    margin:0
+.row-wrapped-results {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.main-container {
+    width: 90%;
+    margin:0 auto;
+}
+
+.pointer-cursor {
+    cursor: pointer;
 }
