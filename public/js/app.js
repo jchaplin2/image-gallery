@@ -60,22 +60,29 @@
         let renderResults = function(json) {
             clearResults();
 
-            let jsonDataArr = json.data;
+            let jsonDataArr = json.data,
+                resultsFrag = window.document.createDocumentFragment();
+
             for(let i=0; i<jsonDataArr.length; i++) {
                 let imgObject = jsonDataArr[i],
                     {images} = imgObject;
 
-                createImage(images);
+                createImage(images, resultsFrag);
             }
+
+            _gridContainerDiv.appendChild(resultsFrag);
+
+            let pageNav = window.document.getElementById("nav-list");
+            pageNav.classList.remove("invisible");
         };
 
         let clearResults = function() {
             while (_gridContainerDiv.firstChild) {
                 _gridContainerDiv.firstChild.remove();
             }
-        }
+        };
 
-        let createImage = function(imageData) {
+        let createImage = function(imageData, resultsFrag) {
             let img = window.document.createElement("img");
             img.setAttribute("src", imageData.fixed_width_still.url);
             img.setAttribute("data-toggle", "modal");
@@ -89,7 +96,7 @@
             });
             img.className = "mt-2";
 
-            _gridContainerDiv.appendChild(img);
+            resultsFrag.appendChild(img);
         };
 
         let init = function(){
@@ -161,6 +168,54 @@
         };
     }
 
+    function PaginationContainer(){
+        //modeled based on this example:
+        //https://getbootstrap.com/docs/4.0/components/pagination/#working-with-icons
+
+        this.renderContainer = function() {
+            let navList = window.document.createElement("nav");
+            navList.setAttribute("id", "nav-list");
+            navList.setAttribute("aria-label", "Page navigation example");
+            navList.classList="d-flex justify-content-center mt-2 invisible";
+
+            let unorderedList = window.document.createElement("ul");
+            unorderedList.classList = "pagination pagination-lg";
+
+            renderNavItems(unorderedList);
+            navList.append(unorderedList);
+            _mainContainerDiv.appendChild(navList);
+
+        };
+
+        let renderNavItems = function(listElt) {
+            renderNavItem(listElt, '\u00ab', "Previous");
+            renderNavItem(listElt, '\u00bb', "Next");
+        };
+
+        let renderNavItem = function(parentListElt, displayText, textValue) {
+            let listItem = window.document.createElement("li");
+            listItem.className = "page-item";
+
+            let anchorItem = window.document.createElement("a");
+            anchorItem.className = "page-link";
+            anchorItem.setAttribute("href","#");
+            anchorItem.setAttribute("aria-label", textValue);
+
+            let spanItem = window.document.createElement("span");
+            spanItem.setAttribute("aria-hidden","true");
+            spanItem.textContent = displayText;
+            anchorItem.appendChild(spanItem);
+
+            let textItem = window.document.createElement("span");
+            textItem.className = "sr-only";
+            textItem.textContent = textValue;
+            anchorItem.appendChild(textItem);
+
+            listItem.appendChild(anchorItem);
+            parentListElt.append(listItem);
+        };
+    }
+
     let fetchImageResults = function(term) {
         const url = `${ROOT_URL}&q=${term}`;
         fetch(url).then(function(response) {
@@ -178,6 +233,9 @@
 
         _gridContainer = new ImageGridComponent();
 
+        let paginationComponent = new PaginationContainer();
+        paginationComponent.renderContainer();
+
         let modalContainer = new ImageModalContainer();
         modalContainer.renderContainer();
 
@@ -190,7 +248,7 @@
 
             modalBodyImage.src = modalUrl;
         });
-    }
+    };
 
     init();
 })();
