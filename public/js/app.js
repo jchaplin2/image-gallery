@@ -1,10 +1,13 @@
 (function() {
-    let _mainContainerDiv,
-        _gridContainer,
-        _gridContainerDiv;
+    let _gridContainer,
+        _inputSearchBox,
+        _gridContainerDiv,
+        _mainContainerDiv,
+        _currentOffset = 0;
 
     const ENTER_KEY = 13,
           API_KEY = 'GZKGwdu6xlIM0iV58yFKJOFLqj0NLXFw',
+          OFFSET_INCREMENT = 10,
           ROOT_URL = `http://api.giphy.com/v1/gifs/search?api_key=${API_KEY}`;
 
     function InputSearchComponent() {
@@ -18,7 +21,8 @@
             inputButton.className = "input-group-text";
             inputButton.innerText = "Search";
             inputButton.addEventListener("click", function() {
-                fetchImageResults(_term);
+                _currentOffset = 0;
+                fetchImageResults(_term, _currentOffset);
             });
 
             inputDiv.appendChild(inputButton);
@@ -33,7 +37,8 @@
             inputElement.setAttribute("aria-label", "Search");
             inputElement.addEventListener("keyup", function(e) {
                 if(e.keyCode === ENTER_KEY){
-                    fetchImageResults(_term);
+                    _currentOffset = 0;
+                    fetchImageResults(_term, _currentOffset);
                 } else {
                     _term = e.target.value;
                 }
@@ -49,6 +54,10 @@
             inputDiv.appendChild(renderInput());
             inputDiv.appendChild(renderSearchBox());
             _mainContainerDiv.appendChild(inputDiv);
+        };
+
+        this.getTerm = function() {
+            return _term;
         };
     }
 
@@ -84,7 +93,12 @@
 
         let createImage = function(imageData, resultsFrag) {
             let img = window.document.createElement("img");
-            img.setAttribute("src", imageData.fixed_width_still.url);
+            const stillImageData = imageData.fixed_width_still,
+                  {url, width, height} = stillImageData;
+
+            img.setAttribute("src", url);
+            img.setAttribute("width", width);
+            img.setAttribute("height", height);
             img.setAttribute("data-toggle", "modal");
             img.setAttribute("data-target", "#image-modal");
             img.setAttribute("data-modal-url", imageData.original.url);
@@ -176,7 +190,7 @@
             let navList = window.document.createElement("nav");
             navList.setAttribute("id", "nav-list");
             navList.setAttribute("aria-label", "Page navigation example");
-            navList.classList="d-flex justify-content-center mt-2 invisible";
+            navList.classList="d-flex justify-content-center mt-2 invisible fixed-footer";
 
             let unorderedList = window.document.createElement("ul");
             unorderedList.classList = "pagination pagination-lg";
@@ -188,13 +202,26 @@
         };
 
         let renderNavItems = function(listElt) {
-            renderNavItem(listElt, '\u00ab', "Previous");
-            renderNavItem(listElt, '\u00bb', "Next");
+            renderNavItem(listElt, '\u00ab', "Previous", function() {
+                if(_currentOffset < OFFSET_INCREMENT) {
+                    return;
+                }
+
+                let term = _inputSearchBox.getTerm();
+                _currentOffset -= OFFSET_INCREMENT;
+                fetchImageResults(term, _currentOffset);
+            });
+            renderNavItem(listElt, '\u00bb', "Next", function() {
+                let term = _inputSearchBox.getTerm();
+                _currentOffset += OFFSET_INCREMENT;
+                fetchImageResults(term, _currentOffset);
+            });
         };
 
-        let renderNavItem = function(parentListElt, displayText, textValue) {
+        let renderNavItem = function(parentListElt, displayText, textValue, clickCallback) {
             let listItem = window.document.createElement("li");
             listItem.className = "page-item";
+            listItem.addEventListener("click", clickCallback);
 
             let anchorItem = window.document.createElement("a");
             anchorItem.className = "page-link";
@@ -216,8 +243,8 @@
         };
     }
 
-    let fetchImageResults = function(term) {
-        const url = `${ROOT_URL}&q=${term}`;
+    let fetchImageResults = function(term, offset=0) {
+        const url = `${ROOT_URL}&q=${term}&offset=${offset}&limit=${OFFSET_INCREMENT}`;
         fetch(url).then(function(response) {
           return response.json();
         }).then(function(myJson) {
@@ -228,8 +255,8 @@
     let init = function() {
         _mainContainerDiv = window.document.getElementById("main");
 
-        let inputSearchBox = new InputSearchComponent();
-        inputSearchBox.renderContainer();
+        _inputSearchBox = new InputSearchComponent();
+        _inputSearchBox.renderContainer();
 
         _gridContainer = new ImageGridComponent();
 
