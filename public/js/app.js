@@ -190,14 +190,14 @@
             let navList = window.document.createElement("nav");
             navList.setAttribute("id", "nav-list");
             navList.setAttribute("aria-label", "Page navigation example");
-            navList.classList="d-flex justify-content-center mt-2 invisible fixed-footer";
+            navList.classList="d-flex justify-content-center mt-2 invisible flex-shrink-0";
 
             let unorderedList = window.document.createElement("ul");
             unorderedList.classList = "pagination pagination-lg";
 
             renderNavItems(unorderedList);
             navList.append(unorderedList);
-            _mainContainerDiv.appendChild(navList);
+            window.document.body.appendChild(navList);
 
         };
 

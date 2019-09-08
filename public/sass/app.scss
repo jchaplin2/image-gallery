@@ -1,3 +1,8 @@
+html,body{
+    height: 100%;
+    width: 100%;
+}
+
 .row-wrapped-results {
     display: flex;
     flex-wrap: wrap;
@@ -5,17 +10,11 @@
 }
 
 .main-container {
+    flex: 1 0 auto;
     width: 90%;
-    margin:0 auto;
+    margin: 0 auto;
 }
 
 .pointer-cursor {
     cursor: pointer;
-}
-
-.fixed-footer {
-    position: fixed;
-    left:0;
-    right:0;
-    bottom:0;
 }
