@@ -58,16 +58,106 @@
         };
 
         let renderResults = function(json) {
+            clearResults();
+
             let jsonDataArr = json.data;
             for(let i=0; i<jsonDataArr.length; i++) {
                 let imgObject = jsonDataArr[i],
                     {images} = imgObject;
 
-                let img = window.document.createElement("img");
-                img.setAttribute("src", images.fixed_width.url);
-                img.className = "mt-2";
-                _gridContainerDiv.appendChild(img);
+                createImage(images);
             }
+        };
+
+        let clearResults = function() {
+            while (_gridContainerDiv.firstChild) {
+                _gridContainerDiv.firstChild.remove();
+            }
+        }
+
+        let createImage = function(imageData) {
+            let img = window.document.createElement("img");
+            img.setAttribute("src", imageData.fixed_width_still.url);
+            img.setAttribute("data-toggle", "modal");
+            img.setAttribute("data-target", "#image-modal");
+            img.setAttribute("data-modal-url", imageData.original.url);
+            img.addEventListener("mouseover", function() {
+                this.src = imageData.fixed_width.url;
+            });
+            img.addEventListener("mouseout", function() {
+                this.src = imageData.fixed_width_still.url;
+            });
+            img.className = "mt-2";
+
+            _gridContainerDiv.appendChild(img);
+        };
+
+        let init = function(){
+            _gridContainerDiv = window.document.createElement("div");
+            _gridContainerDiv.setAttribute("id", "row-results");
+            _gridContainerDiv.className = "row-wrapped-results mt-3";
+            _mainContainerDiv.appendChild(_gridContainerDiv);
+        };
+
+        init();
+    }
+
+    function ImageModalContainer() {
+        this.renderContainer = function(){
+            let modalDiv = window.document.createElement("div");
+            modalDiv.classList="modal fade";
+            modalDiv.setAttribute("id", "image-modal");
+            modalDiv.setAttribute("tabindex", "-1");
+            modalDiv.setAttribute("role", "dialog");
+
+            renderDocument(modalDiv);
+            _mainContainerDiv.appendChild(modalDiv);
+        };
+
+        let renderDocument = function(modalDiv) {
+            let modalDocumentDiv = window.document.createElement("div");
+            modalDocumentDiv.classList="modal-dialog modal-dialog-centered";
+            modalDocumentDiv.setAttribute("role", "document");
+
+            let modalContentDiv = window.document.createElement("div");
+            modalContentDiv.className="modal-content";
+
+            renderHeader(modalContentDiv);
+            renderBody(modalContentDiv);
+
+            modalDocumentDiv.appendChild(modalContentDiv);
+            modalDiv.appendChild(modalDocumentDiv);
+        };
+
+        let renderHeader = function(contentDiv) {
+            let closeButton = window.document.createElement("button");
+            closeButton.className="close";
+            closeButton.setAttribute("data-dismiss", "modal");
+            closeButton.setAttribute("aria-label", "Close");
+
+            let closeButtonSpan = window.document.createElement("span");
+            closeButtonSpan.setAttribute("aria-hidden", "true");
+            closeButtonSpan.textContent = 'x';
+            closeButton.appendChild(closeButtonSpan);
+
+            let modalHeaderDiv = window.document.createElement("div");
+            modalHeaderDiv.classList="modal-header pb-2 pt-2";
+            modalHeaderDiv.appendChild(closeButton);
+
+            contentDiv.appendChild(modalHeaderDiv);
+        };
+
+        let renderBody = function(contentDiv) {
+            let modalBodyDiv = window.document.createElement("div");
+            modalBodyDiv.setAttribute("id", "modal-body-content");
+            modalBodyDiv.classList = "modal-body d-flex justify-content-center pt-2";
+
+            let imageElt = window.document.createElement("img");
+            imageElt.setAttribute("id", "modal-body-image");
+            imageElt.className = "mw-100";
+            modalBodyDiv.appendChild(imageElt);
+
+            contentDiv.appendChild(modalBodyDiv);
         };
     }
 
@@ -88,10 +178,18 @@
 
         _gridContainer = new ImageGridComponent();
 
-        _gridContainerDiv = window.document.createElement("div");
-        _gridContainerDiv.setAttribute("id", "row-results");
-        _gridContainerDiv.className = "row-wrapped-results mt-3";
-        _mainContainerDiv.appendChild(_gridContainerDiv);
+        let modalContainer = new ImageModalContainer();
+        modalContainer.renderContainer();
+
+        //load image before modal is shown.
+        //https://getbootstrap.com/docs/4.0/components/modal/#varying-modal-content
+        $('#image-modal').on('show.bs.modal', function (event) {
+            let image = event.relatedTarget,
+                modalUrl = image.dataset.modalUrl,
+                modalBodyImage = window.document.getElementById("modal-body-image");
+
+            modalBodyImage.src = modalUrl;
+        });
     }
 
     init();
