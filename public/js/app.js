@@ -8,7 +8,7 @@
     const ENTER_KEY = 13,
           API_KEY = 'GZKGwdu6xlIM0iV58yFKJOFLqj0NLXFw',
           OFFSET_INCREMENT = 10,
-          ROOT_URL = `http://api.giphy.com/v1/gifs/search?api_key=${API_KEY}`;
+          ROOT_URL = `https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}`;
 
     function InputSearchComponent() {
         let _term;
