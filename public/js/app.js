@@ -18,8 +18,12 @@
             inputDiv.className = "input-group-append pointer-cursor";
 
             let inputButton = window.document.createElement("span");
-            inputButton.className = "input-group-text";
-            inputButton.innerText = "Search";
+            inputButton.className = "input-group-text bg-white";
+
+            let searchIcon = window.document.createElement("i");
+            searchIcon.classList = "fa fa-search";
+            inputButton.appendChild(searchIcon);
+
             inputButton.addEventListener("click", function() {
                 _currentOffset = 0;
                 fetchImageResults(_term, _currentOffset);
@@ -32,7 +36,7 @@
 
         let renderInput = function() {
             let inputElement = window.document.createElement("input");
-            inputElement.className = "form-control";
+            inputElement.className = "form-control border-right-0";
             inputElement.setAttribute("placeholder", "Enter a search term");
             inputElement.setAttribute("aria-label", "Search");
             inputElement.addEventListener("keyup", function(e) {
@@ -49,7 +53,7 @@
 
         this.renderContainer = function(){
             let inputDiv = window.document.createElement("div");
-            inputDiv.classList = "input-group mt-2";
+            inputDiv.classList = "input-group mt-2 box-shadow";
 
             inputDiv.appendChild(renderInput());
             inputDiv.appendChild(renderSearchBox());
@@ -193,7 +197,7 @@
             navList.classList="d-flex justify-content-center mt-2 invisible flex-shrink-0";
 
             let unorderedList = window.document.createElement("ul");
-            unorderedList.classList = "pagination pagination-lg";
+            unorderedList.classList = "pagination pagination-lg box-shadow  ";
 
             renderNavItems(unorderedList);
             navList.append(unorderedList);
