@@ -10,6 +10,15 @@
           OFFSET_INCREMENT = 10,
           ROOT_URL = `https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}`;
 
+    function HeaderComponent(){
+        this.renderContainer = function(){
+            let headerDiv = window.document.createElement("h1");
+            headerDiv.innerText = "Gifs in a Jiffy";
+
+            _mainContainerDiv.appendChild(headerDiv);
+        }
+    }
+
     function InputSearchComponent() {
         let _term;
 
@@ -112,7 +121,6 @@
             img.addEventListener("mouseout", function() {
                 this.src = imageData.fixed_width_still.url;
             });
-            img.className = "mt-2";
 
             resultsFrag.appendChild(img);
         };
@@ -194,7 +202,7 @@
             let navList = window.document.createElement("nav");
             navList.setAttribute("id", "nav-list");
             navList.setAttribute("aria-label", "Page navigation example");
-            navList.classList="d-flex justify-content-center mt-2 invisible flex-shrink-0";
+            navList.classList="d-flex justify-content-center mt-2 invisible flex-shrink-0 mt-2";
 
             let unorderedList = window.document.createElement("ul");
             unorderedList.classList = "pagination pagination-lg box-shadow  ";
@@ -258,6 +266,9 @@
 
     let init = function() {
         _mainContainerDiv = window.document.getElementById("main");
+
+        let headerComponent = new HeaderComponent();
+        headerComponent.renderContainer();
 
         _inputSearchBox = new InputSearchComponent();
         _inputSearchBox.renderContainer();
