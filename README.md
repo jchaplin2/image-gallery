@@ -25,6 +25,8 @@ A simple image gallery built with plain JavaScript and gulp-sass.
 * User can specify and view "favorites" to be stored in localStorage.
 * Add page number links in pagination in addition to previous and next. For example, show first 5 pages in pagination.
 * Improve color scheme.
+* Add a no results screen if search returns nothing.
+* Improve input validation warning display.
 * Usage of picture element to load appropriate image results based on viewport.
     https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture
 

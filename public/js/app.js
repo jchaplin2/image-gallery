@@ -20,7 +20,7 @@
     }
 
     function InputSearchComponent() {
-        let _term;
+        let _term = "";
 
         let renderSearchBox = function() {
             let inputDiv = window.document.createElement("div");
@@ -256,6 +256,11 @@
     }
 
     let fetchImageResults = function(term, offset=0) {
+        if(term === "") {
+            alert("Please enter a non-blank search term.");
+            return;
+        }
+
         const url = `${ROOT_URL}&q=${term}&offset=${offset}&limit=${OFFSET_INCREMENT}`;
         fetch(url).then(function(response) {
           return response.json();
